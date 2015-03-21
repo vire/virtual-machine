@@ -41,6 +41,7 @@ export default Ember.Component.extend({
   displayLayer: function () {
     var layers = this.get('layers');
     layers.map(l => {
+      l.created_at = moment(l.created_at).format('MMMM Do YYYY, HH:mm:ss');
       l.health = (parseInt(l.current_robustness) / parseInt(l.max_robustness) * 100).toFixed(2) + '%';
       return l;
     });

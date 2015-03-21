@@ -39,8 +39,6 @@ export default Ember.Component.extend({
 
     });
 
-
-
     this.getNodes().then(function(response) {
       var radiusScale = d3.scale.linear();
       var maxUserCount = parseInt(response._embedded.nodes.sortBy('active_users')[0].active_users)
@@ -56,7 +54,6 @@ export default Ember.Component.extend({
         });
 
         const health = (totalCurrentRobustness / totalMaxRobustness * 100);
-        console.log('health',health)
         if(health < 30) {
           return 'NOK';
         } else if(health < 70) {
