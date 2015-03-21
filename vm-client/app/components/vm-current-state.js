@@ -53,21 +53,16 @@ export default Ember.Component.extend({
           return parseInt(previousValue) + parseInt(currentValue);
         });
 
-        const health = (totalCurrentRobustness / totalMaxRobustness * 100);
-        if(health < 30) {
-          return 'NOK';
-        } else if(health < 70) {
-          return 'WARN';
-        } else {
-          return 'OK';
-        }
+        return (totalCurrentRobustness / totalMaxRobustness * 100);
+
       }
       var r = response._embedded.nodes.map(n => {
         var health = computeNodeHealth(n._embedded.layers);
         var radius = radiusScale(parseInt(n.active_users));
         return {
-          fillKey: health,
+          fillKey: self.getNodeColor(health),
           radius: radius,
+          health: health,
           _metadata: n,
           name: n.venue_name,
           latitude: n.venue_lat,
@@ -77,15 +72,26 @@ export default Ember.Component.extend({
 
       map.bubbles(r, {
         popupTemplate: function(geo, data) {
-          self.set('currentNodeLayers', data._metadata._embedded.layers);
-          return '<div class="hoverinfo"> Active users:' + data._metadata.active_users + '\n' +
-            'Venue address:' + data._metadata.venue_address + '\n' +
-            'IP address:' + data._metadata.ip_address + '\n';
+          self.set('currentNodeLayers', data._metadata._embedded.layers.sortBy('level'));
+          return '<div class="hoverinfo"><b>Health ' + (data.health).toFixed(2) +
+          '%</b> | Active users: ' + data._metadata.active_users + '<br>' +
+            'Address: ' + data.name + ' - ' + data._metadata.venue_address + '<br>' +
+            'IP address:' + data._metadata.ip_address;
         }
       });
     }, function reject(reason) {
       console.error(reason);
     });
+  },
+
+  getNodeColor(health) {
+    if(health < 50) {
+      return 'NOK';
+    } else if(health < 99) {
+      return 'WARN';
+    } else {
+      return 'OK';
+    }
   },
   getNodes() {
     return new Ember.RSVP.Promise(function(resolve, reject) {
