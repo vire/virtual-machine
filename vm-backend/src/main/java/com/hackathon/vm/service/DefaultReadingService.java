@@ -2,6 +2,7 @@ package com.hackathon.vm.service;
 
 import com.hackathon.vm.domain.actions.ActionsResult;
 import com.hackathon.vm.domain.nodes.NodesResult;
+import com.hackathon.vm.domain.systems.SystemsResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,5 +22,11 @@ public class DefaultReadingService implements ReadingService {
     public NodesResult readNodes() {
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForObject("http://csob-hackathon.herokuapp.com:80/api/v1/nodes.json", NodesResult.class);
+    }
+
+    @Override
+    public SystemsResult readSystems() {
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.getForObject("http://csob-hackathon.herokuapp.com:80/api/v1/systems.json", SystemsResult.class);
     }
 }

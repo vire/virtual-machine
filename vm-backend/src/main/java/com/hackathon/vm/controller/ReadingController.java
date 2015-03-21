@@ -2,6 +2,7 @@ package com.hackathon.vm.controller;
 
 import com.hackathon.vm.domain.actions.ActionsResult;
 import com.hackathon.vm.domain.nodes.NodesResult;
+import com.hackathon.vm.domain.systems.SystemsResult;
 import com.hackathon.vm.service.ReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,5 +33,10 @@ public class ReadingController {
     @RequestMapping(value = "nodes", method = RequestMethod.GET)
     public @ResponseBody NodesResult readNodes() {
         return readingService.readNodes();
+    }
+
+    @RequestMapping(value = "systems", method = RequestMethod.GET)
+    public @ResponseBody SystemsResult readSystems() {
+        return readingService.readSystems();
     }
 }
