@@ -2,8 +2,17 @@
 
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
-var app = new EmberApp();
+var app = new EmberApp({
+  'ember-cli-foundation-sass': {
+    'modernizr': true,
+    'fastclick': true,
+    'foundationJs': 'all'
+  }
+});
 
+app.import('bower_components/d3/d3.min.js');
+app.import('bower_components/topojson/topojson.js');
+app.import('bower_components/datamaps/dist/datamaps.world.js');
 // Use `app.import` to add additional libraries to the generated
 // output files.
 //
