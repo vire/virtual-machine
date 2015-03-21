@@ -3,8 +3,10 @@ import layout from '../templates/components/vm-current-state';
 
 export default Ember.Component.extend({
   layout: layout,
+  currentLayers: null,
   didInsertElement() {
-    var element = this.get('element');
+    var self = this;
+    var element = Ember.$('.map-wrapper')[0];
     var map = new Datamap({
       element: element,
       scope: 'world',
@@ -16,7 +18,7 @@ export default Ember.Component.extend({
       setProjection: function(element) {
         var projection = d3.geo.equirectangular()
           .center([23, 45])
-          .rotate([10, -4])
+          .rotate([10, -5.3])
           .scale(7000)
           .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
         var path = d3.geo.path()
@@ -28,50 +30,75 @@ export default Ember.Component.extend({
         };
       },
       fills: {
-        defaultFill: '#ABDDA4',
-        ONE: 'blue',
-        TWO: 'red'
+        defaultFill: 'rgb(211, 211, 211)',
+        NODE_COLOR: 'red',
+        OK: 'green',
+        WARN: 'orange',
+        NOK: 'red'
       },
 
     });
 
-    this.getNodes().then(function (response) {
-      debugger;
-      map.bubbles([{
-        name: 'Castle Bravo',
-        radius: 25,
-        yeild: 15000,
-        country: 'USA',
-        significance: 'First dry fusion fuel "staged" thermonuclear weapon; a serious nuclear fallout accident occurred',
-        fillKey: 'USA',
-        date: '1954-03-01',
-        latitude: 11.415,
-        longitude: 165.1619
-      }, {
-        name: 'Tsar Bomba',
-        radius: 20,
-        yeild: 50000,
-        country: 'USSR',
-        fillKey: 'RUS',
-        significance: 'Largest thermonuclear weapon ever tested—scaled down from its initial 100 Mt design by 50%',
-        date: '1961-10-31',
-        latitude: 49.0524622,
-        longitude: 13.7744861
-      }]);
-    }, function reject(reason) {
 
+
+    this.getNodes().then(function(response) {
+      var radiusScale = d3.scale.linear();
+      var maxUserCount = parseInt(response._embedded.nodes.sortBy('active_users')[0].active_users)
+      radiusScale.range([2, 10]).domain([0, maxUserCount]);
+
+      function computeNodeHealth(layers) {
+
+        const totalMaxRobustness = layers.mapBy('max_robustness').reduce(function(previousValue, currentValue, index, array) {
+          return parseInt(previousValue) + parseInt(currentValue);
+        });
+        const totalCurrentRobustness = layers.mapBy('current_robustness').reduce(function(previousValue, currentValue, index, array) {
+          return parseInt(previousValue) + parseInt(currentValue);
+        });
+
+        const health = (totalCurrentRobustness / totalMaxRobustness * 100);
+        console.log('health',health)
+        if(health < 30) {
+          return 'NOK';
+        } else if(health < 70) {
+          return 'WARN';
+        } else {
+          return 'OK';
+        }
+      }
+      var r = response._embedded.nodes.map(n => {
+        var health = computeNodeHealth(n._embedded.layers);
+        var radius = radiusScale(parseInt(n.active_users));
+        return {
+          fillKey: health,
+          radius: radius,
+          _metadata: n,
+          name: n.venue_name,
+          latitude: n.venue_lat,
+          longitude: n.venue_long
+        };
+      });
+
+      map.bubbles(r, {
+        popupTemplate: function(geo, data) {
+          self.set('currentNodeLayers', data._metadata._embedded.layers);
+          return '<div class="hoverinfo"> Active users:' + data._metadata.active_users + '\n' +
+            'Venue address:' + data._metadata.venue_address + '\n' +
+            'IP address:' + data._metadata.ip_address + '\n';
+        }
+      });
+    }, function reject(reason) {
+      console.error(reason);
     });
   },
-
   getNodes() {
-    return new Ember.RSVP.Promise(function (resolve, reject) {
+    return new Ember.RSVP.Promise(function(resolve, reject) {
       Ember.$.ajax({
-        url:'http://localhost:8080/vm-backend/read/nodes',
-         dataType: 'json',
-         success: resolve,
-         error: function (jqXHR) {
-             reject(jqXHR);
-          }
+        url: 'http://localhost:8080/vm-backend/read/nodes',
+        dataType: 'json',
+        success: resolve,
+        error: function(jqXHR) {
+          reject(jqXHR);
+        }
       });
     });
   }

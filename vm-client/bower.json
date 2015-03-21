@@ -14,7 +14,8 @@
     "qunit": "~1.17.1",
     "foundation": "~5.5.0",
     "d3": "~3.5.5",
-    "datamaps": "~0.3.6"
+    "datamaps": "~0.3.6",
+    "moment": "~2.9.0"
   },
   "resolutions": {
     "jquery": "^1.11.1",

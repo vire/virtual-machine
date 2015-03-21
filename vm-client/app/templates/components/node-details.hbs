@@ -1,0 +1,35 @@
+{{#if layers}}
+  <div class="row">
+    <div class="small-12 columns">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th width="200">created_at</th>
+            <th width="40">level</th>
+            <th width="40">health</th>
+            <th width="40">current_robustness</th>
+            <th width="40">max_robustness</th>
+            <th width="150">name</th>
+            <th width="150">user_capacity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each layer in layers}}
+            <tr>
+              <td>{{layer.id}}</td>
+              <td>{{layer.created_at}}</td>
+              <td>{{layer.level}}</td>
+              <td>{{layer.health}}</td>
+              <td>{{layer.current_robustness}}</td>
+              <td>{{layer.max_robustness}}</td>
+              <td>{{layer.name}}</td>
+              <td>{{layer.user_capacity}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{{/if}}
+{{yield}}

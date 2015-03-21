@@ -13,6 +13,7 @@ var app = new EmberApp({
 app.import('bower_components/d3/d3.min.js');
 app.import('bower_components/topojson/topojson.js');
 app.import('bower_components/datamaps/dist/datamaps.world.js');
+app.import('bower_components/moment/min/moment-with-locales.min.js');
 // Use `app.import` to add additional libraries to the generated
 // output files.
 //
