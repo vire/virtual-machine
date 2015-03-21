@@ -6,19 +6,23 @@ import com.hackathon.vm.domain.nodes.Nodes;
 import com.hackathon.vm.domain.nodes.NodesResult;
 import com.hackathon.vm.domain.systems.SystemsResult;
 import com.hackathon.vm.domain.systems._embedded;
+import com.hackathon.vm.domain.traffic.TrafficResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 
 /**
  * @author Michal Dojcar
  */
 @Service
 public class DefaultReadingService implements ReadingService {
+
+    private static final Integer RELEVANT_HOURS = 12;
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS");
 
     private final RestTemplate restTemplate;
 
@@ -45,6 +49,13 @@ public class DefaultReadingService implements ReadingService {
     public SystemsResult readSystemsOfNode(String nodeId) {
         Nodes node = getNodeById(nodeId);
         return getSystemsBydNode(node);
+    }
+
+    @Override
+    public TrafficResult readTraffic(int page) {
+        return restTemplate.getForObject(
+                "http://csob-hackathon.herokuapp.com:80/api/v1/traffic.json?page=" + page + "&per_page=50&happened_after=2015-03-21T07%3A00%3A00.000%2B01%3A00",
+                TrafficResult.class);
     }
 
     private Nodes getNodeById(String nodeId) {

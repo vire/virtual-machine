@@ -3,6 +3,7 @@ package com.hackathon.vm.controller;
 import com.hackathon.vm.domain.actions.ActionsResult;
 import com.hackathon.vm.domain.nodes.NodesResult;
 import com.hackathon.vm.domain.systems.SystemsResult;
+import com.hackathon.vm.domain.traffic.TrafficResult;
 import com.hackathon.vm.service.ReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,5 +45,10 @@ public class ReadingController {
     @RequestMapping(value = "nodes/{nodeId}/systems", method = RequestMethod.GET)
     public @ResponseBody SystemsResult readSystemsOfNode(@PathVariable String nodeId) {
         return readingService.readSystemsOfNode(nodeId);
+    }
+
+    @RequestMapping(value = "traffic/{page}", method = RequestMethod.GET)
+    public @ResponseBody TrafficResult readTraffic(@PathVariable Integer page) {
+        return readingService.readTraffic(page);
     }
 }
