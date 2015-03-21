@@ -14,4 +14,6 @@ public interface ReadingService {
     NodesResult readNodes();
 
     SystemsResult readSystems();
+
+    SystemsResult readSystemsOfNode(String nodeId);
 }

@@ -6,6 +6,7 @@ import com.hackathon.vm.domain.systems.SystemsResult;
 import com.hackathon.vm.service.ReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,5 +39,10 @@ public class ReadingController {
     @RequestMapping(value = "systems", method = RequestMethod.GET)
     public @ResponseBody SystemsResult readSystems() {
         return readingService.readSystems();
+    }
+
+    @RequestMapping(value = "nodes/{nodeId}/systems", method = RequestMethod.GET)
+    public @ResponseBody SystemsResult readSystemsOfNode(@PathVariable String nodeId) {
+        return readingService.readSystemsOfNode(nodeId);
     }
 }
