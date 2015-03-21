@@ -98,7 +98,6 @@ public class _embedded
         return events;
     }
 
-    @JsonIgnore
     public void setEvents(Event[] events) {
         this.events = events;
     }

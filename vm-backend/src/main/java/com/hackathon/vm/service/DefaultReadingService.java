@@ -39,14 +39,18 @@ public class DefaultReadingService implements ReadingService {
 
     @Override
     public NodesResult readNodes() {
-        List<Events> allEvents = new ArrayList<>();
-        for (int i=1; i<15; i++)
-            allEvents.addAll(Arrays.asList(readTraffic(i).get_embedded().getEvents()));
-
+        List<Events> allEvents = getAllEvents();
         NodesResult nodesResult = restTemplate.getForObject("http://csob-hackathon.herokuapp.com:80/api/v1/nodes.json", NodesResult.class);
         for (Nodes nodes : nodesResult.get_embedded().getNodes())
             updateNode(nodes, allEvents);
         return nodesResult;
+    }
+
+    private List<Events> getAllEvents() {
+        List<Events> allEvents = new ArrayList<>();
+        for (int i=1; i<15; i++)
+            allEvents.addAll(Arrays.asList(readTraffic(i).get_embedded().getEvents()));
+        return allEvents;
     }
 
     private void updateNode(Nodes nodes, List<Events> allEvents) {
@@ -72,7 +76,27 @@ public class DefaultReadingService implements ReadingService {
     @Override
     public SystemsResult readSystemsOfNode(String nodeId) {
         Nodes node = getNodeById(nodeId);
-        return getSystemsBydNode(node);
+
+        List<Events> allEvents = getAllEvents();
+        SystemsResult systemsResult = getSystemsBydNode(node);
+        for (_embedded e : systemsResult.get_embedded())
+            updateSystem(e, allEvents);
+        return systemsResult;
+    }
+
+    private void updateSystem(_embedded embed, List<Events> allEvents) {
+        List<Event> systemEvents = new ArrayList<>();
+        for (Events e : allEvents) {
+            if (e.get_embedded().getSystem() != null && embed.getId().equals(e.get_embedded().getSystem().getId())) {
+                Event event = new Event();
+                event.setEvent_id(e.getEvent_id());
+                event.setHappened_at(e.getHappened_at());
+                event.setAction(e.get_embedded().getAction());
+                event.setActor(e.get_embedded().getActor());
+                systemEvents.add(event);
+            }
+        }
+        embed.setEvents(systemEvents.toArray(new Event[systemEvents.size()]));
     }
 
     @Override
