@@ -1,5 +1,7 @@
 package com.hackathon.vm.domain.nodes;
 
+import com.hackathon.vm.domain.common.Event;
+
 /**
  * @author Michal Dojcar
  */
@@ -22,6 +24,8 @@ public class Nodes
     private _embedded _embedded;
 
     private String parent_id;
+
+    private Event[] events;
 
     public String getVenue_long ()
     {
@@ -111,6 +115,14 @@ public class Nodes
     public void setParent_id (String parent_id)
     {
         this.parent_id = parent_id;
+    }
+
+    public Event[] getEvents() {
+        return events;
+    }
+
+    public void setEvents(Event[] events) {
+        this.events = events;
     }
 
     @Override

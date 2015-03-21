@@ -1,5 +1,8 @@
 package com.hackathon.vm.domain.systems;
 
+import com.hackathon.vm.domain.common.Event;
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * @author Michal Dojcar
  */
@@ -18,6 +21,8 @@ public class _embedded
     private String created_at;
 
     private String system_type_name;
+
+    private Event[] events;
 
     public String getId ()
     {
@@ -87,6 +92,15 @@ public class _embedded
     public void setSystem_type_name (String system_type_name)
     {
         this.system_type_name = system_type_name;
+    }
+
+    public Event[] getEvents() {
+        return events;
+    }
+
+    @JsonIgnore
+    public void setEvents(Event[] events) {
+        this.events = events;
     }
 
     @Override

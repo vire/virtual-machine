@@ -1,5 +1,9 @@
 package com.hackathon.vm.domain.traffic;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonValue;
+
 /**
  * @author Michal Dojcar
  */
@@ -148,6 +152,7 @@ public class Node
     {
         this.parent_id = parent_id;
     }
+
 
     @Override
     public String toString()

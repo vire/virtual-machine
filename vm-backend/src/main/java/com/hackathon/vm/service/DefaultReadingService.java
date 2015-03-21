@@ -1,11 +1,13 @@
 package com.hackathon.vm.service;
 
 import com.hackathon.vm.domain.actions.ActionsResult;
+import com.hackathon.vm.domain.common.Event;
 import com.hackathon.vm.domain.nodes.Layers;
 import com.hackathon.vm.domain.nodes.Nodes;
 import com.hackathon.vm.domain.nodes.NodesResult;
 import com.hackathon.vm.domain.systems.SystemsResult;
 import com.hackathon.vm.domain.systems._embedded;
+import com.hackathon.vm.domain.traffic.Events;
 import com.hackathon.vm.domain.traffic.TrafficResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -37,7 +39,29 @@ public class DefaultReadingService implements ReadingService {
 
     @Override
     public NodesResult readNodes() {
-        return restTemplate.getForObject("http://csob-hackathon.herokuapp.com:80/api/v1/nodes.json", NodesResult.class);
+        List<Events> allEvents = new ArrayList<>();
+        for (int i=1; i<15; i++)
+            allEvents.addAll(Arrays.asList(readTraffic(i).get_embedded().getEvents()));
+
+        NodesResult nodesResult = restTemplate.getForObject("http://csob-hackathon.herokuapp.com:80/api/v1/nodes.json", NodesResult.class);
+        for (Nodes nodes : nodesResult.get_embedded().getNodes())
+            updateNode(nodes, allEvents);
+        return nodesResult;
+    }
+
+    private void updateNode(Nodes nodes, List<Events> allEvents) {
+        List<Event> nodeEvents = new ArrayList<>();
+        for (Events e : allEvents) {
+            if (e.get_embedded().getNode() != null && nodes.getId().equals(e.get_embedded().getNode().getId())) {
+                Event event = new Event();
+                event.setEvent_id(e.getEvent_id());
+                event.setHappened_at(e.getHappened_at());
+                event.setAction(e.get_embedded().getAction());
+                event.setActor(e.get_embedded().getActor());
+                nodeEvents.add(event);
+            }
+        }
+        nodes.setEvents(nodeEvents.toArray(new Event[nodeEvents.size()]));
     }
 
     @Override
