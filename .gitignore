@@ -1,0 +1,21 @@
+### Maven Build Folders ###
+target/
+
+### IntelliJ IDEA project files ###
+*.iml
+.idea/
+
+### Eclipse project files ###
+.settings/
+.classpath
+.project
+
+### bower vendor / bower_components folder
+bower_components/
+### vendor/  - we need vendor to store 3d party libs
+node_modules
+dist
+tmp
+npm-debug.log
+unit-test-result.xml
+
