@@ -18,6 +18,5 @@ public interface ReadingService {
 
     SystemsResult readSystemsOfNode(String nodeId);
 
-    TrafficResult readTraffic(int page);
 
 }

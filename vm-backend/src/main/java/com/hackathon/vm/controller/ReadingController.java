@@ -45,10 +45,6 @@ public class ReadingController {
     @RequestMapping(value = "nodes/{nodeId}/systems", method = RequestMethod.GET)
     public @ResponseBody SystemsResult readSystemsOfNode(@PathVariable String nodeId) {
         return readingService.readSystemsOfNode(nodeId);
-    }
 
-    @RequestMapping(value = "traffic/{page}", method = RequestMethod.GET)
-    public @ResponseBody TrafficResult readTraffic(@PathVariable Integer page) {
-        return readingService.readTraffic(page);
     }
 }
