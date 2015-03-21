@@ -23,14 +23,9 @@ import java.util.*;
 @Service
 public class DefaultReadingService implements ReadingService {
 
-    private static final Integer RELEVANT_HOURS = 12;
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH'%3A'mm'%3A'ss.SSS");
+    private static List<Events> ALL_EVENTS;
 
-    private final RestTemplate restTemplate;
-
-    public DefaultReadingService() {
-        restTemplate = new RestTemplate();
-    }
+    private static final RestTemplate restTemplate=new RestTemplate();
 
     @Override
     public ActionsResult readActions() {
@@ -39,14 +34,15 @@ public class DefaultReadingService implements ReadingService {
 
     @Override
     public NodesResult readNodes() {
-        List<Events> allEvents = getAllEvents();
+        if (ALL_EVENTS == null) ALL_EVENTS = getAllEvents();
+        List<Events> allEvents = ALL_EVENTS;
         NodesResult nodesResult = restTemplate.getForObject("http://csob-hackathon.herokuapp.com:80/api/v1/nodes.json", NodesResult.class);
         for (Nodes nodes : nodesResult.get_embedded().getNodes())
             updateNode(nodes, allEvents);
         return nodesResult;
     }
 
-    private List<Events> getAllEvents() {
+    private static List<Events> getAllEvents() {
         List<Events> allEvents = new ArrayList<>();
         for (int i=1; i<15; i++)
             allEvents.addAll(Arrays.asList(readTraffic(i).get_embedded().getEvents()));
@@ -77,7 +73,8 @@ public class DefaultReadingService implements ReadingService {
     public SystemsResult readSystemsOfNode(String nodeId) {
         Nodes node = getNodeById(nodeId);
 
-        List<Events> allEvents = getAllEvents();
+        if (ALL_EVENTS == null) ALL_EVENTS = getAllEvents();
+        List<Events> allEvents = ALL_EVENTS;
         SystemsResult systemsResult = getSystemsBydNode(node);
         for (_embedded e : systemsResult.get_embedded())
             updateSystem(e, allEvents);
@@ -99,8 +96,7 @@ public class DefaultReadingService implements ReadingService {
         embed.setEvents(systemEvents.toArray(new Event[systemEvents.size()]));
     }
 
-    @Override
-    public TrafficResult readTraffic(int page) {
+    public static TrafficResult readTraffic(int page) {
         return restTemplate.getForObject(
                 "http://csob-hackathon.herokuapp.com:80/api/v1/traffic.json?page=" + page + "&per_page=50&happened_after=2015-03-21T07%3A00%3A00.000%2B01%3A00",
                 TrafficResult.class);
