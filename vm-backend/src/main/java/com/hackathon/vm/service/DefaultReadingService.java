@@ -67,7 +67,7 @@ public class DefaultReadingService implements ReadingService {
             if (systemIds.contains(system.getId()))
                 systems.add(system);
 
-        systemsResult.set_embedded((_embedded[]) systems.toArray());
+        systemsResult.set_embedded(systems.toArray(new _embedded[systems.size()]));
         return systemsResult;
     }
 }
